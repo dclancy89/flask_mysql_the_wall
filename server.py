@@ -1,26 +1,37 @@
-import md5
-import os, binascii
-import datetime
+#import all my stuff
+
+import md5				# for passwords
+import os, binascii		# for salts
+import datetime			# used for checking if the post is older than 30 min
 from flask import Flask, render_template, request, redirect, session, flash
 app = Flask(__name__)
 app.secret_key = 'jkfu890342htruo34v7yut8039pthjiopv78t0432-y5t3480wtb342y905n34um20w'
 
+#sql connection
 from mysqlconnection import MySQLConnector
 mysql = MySQLConnector(app, 'the_wall_db')
 
+# for email verification
 import re
 EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 
+
+
+# root route
 @app.route('/')
 def index():
+	# if user is already logged in, go right to the members page
 	if session.get('id') != None:
 		return redirect('/members')
+
 	return render_template('index.html')
 
+# renders registration page
 @app.route('/sign_up')
 def sign_up():
 	return render_template('register.html')
 
+# validates and adds the new user to the db
 @app.route('/register', methods=['POST'])
 def register():
 	first_name = request.form['first_name']
@@ -116,6 +127,8 @@ def register():
 
 	return redirect('/')
 
+
+# validates the user trying to log in, and sends them to the members page.
 @app.route('/login', methods=['POST'])
 def login():
 	email = request.form['email']
@@ -140,12 +153,16 @@ def login():
 
 	return redirect('/')
 
+
+# the actual members page
 @app.route('/members')
 def members():
+
+	#check if someone is logged in, if not, boot them out.
 	if session.get('id') == None:
 		return redirect('/')
 
-
+	# pull all the messages from the db
 	query = """SELECT messages.id, messages.user_id, CONCAT(users.first_name, ' ', users.last_name) as posted_by, DATE_FORMAT(messages.created_at, '%M %D, %Y') as posted_on, messages.message as content 
 				FROM messages
 				JOIN users ON messages.user_id = users.id
@@ -153,6 +170,8 @@ def members():
 			"""
 	messages = mysql.query_db(query)
 
+
+	# pull all the comments from the db
 	query = """SELECT comments.id, comments.user_id, comments.message_id, CONCAT(users.first_name, ' ', users.last_name) as posted_by, DATE_FORMAT(messages.created_at, '%M %D, %Y') as posted_on, comments.comment as content 
 				FROM comments
 				JOIN messages ON comments.message_id = messages.id
@@ -163,6 +182,7 @@ def members():
 	return render_template('members.html', messages=messages, comments=comments)
 
 
+# saves the new message to the db
 @app.route('/new_message', methods=['POST'])
 def new_message():
 	user_id = session['id']
@@ -178,7 +198,7 @@ def new_message():
 
 	return redirect('/members')
 
-
+# saves the new comment to the db
 @app.route('/new_comment/<message_id>', methods=['POST'])
 def new_comment(message_id):
 	user_id = session['id']
@@ -195,7 +215,7 @@ def new_comment(message_id):
 
 	return redirect('/members')
 
-
+# deletes a message and all comments realted to it.
 @app.route('/delete_message/<message_id>')
 def delete_message(message_id):
 	query = "SELECT messages.user_id, messages.created_at FROM messages WHERE id=:id"
@@ -206,12 +226,12 @@ def delete_message(message_id):
 	created_at = result[0]['created_at']
 
 
-	
-
+	# make sure the user is deleting their own message, and if the message is older than 30 min
 	if message_user_id == session['id'] and created_at > datetime.datetime.now()-datetime.timedelta(minutes=30):
 		query = "DELETE FROM messages WHERE messages.id=:id"
 		mysql.query_db(query, data)
 		
+		#deletes all the comments for that post if any exists
 		query = "SELECT * FROM comments WHERE comments.message_id=:id"
 		if len(mysql.query_db(query,data)) != 0:
 			query = "DELETE FROM comments WHERE comments.message_id=:id"
@@ -223,6 +243,8 @@ def delete_message(message_id):
 
 	return redirect('/members')
 
+
+# deletes a comment
 @app.route('/delete_comment/<comment_id>')
 def delete_comment(comment_id):
 	query = "SELECT comments.user_id, comments.created_at FROM comments WHERE id=:id"
@@ -232,6 +254,7 @@ def delete_comment(comment_id):
 	comment_user_id = result[0]['user_id']
 	created_at = result[0]['created_at']
 
+	# make sure the user is deleting their own comment and check if the comment is older than 30 min
 	if comment_user_id == session['id'] and created_at > datetime.datetime.now()-datetime.timedelta(minutes=30):
 		query = "DELETE FROM comments WHERE comments.id=:id"
 		data = {'id': int(comment_id)}
@@ -242,6 +265,8 @@ def delete_comment(comment_id):
 
 	return redirect('/members')
 
+
+#logs the current user out.
 @app.route('/logout')
 def logout():
 	session.clear()
