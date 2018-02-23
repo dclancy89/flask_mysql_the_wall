@@ -2,8 +2,37 @@
 <html>
 <head>
 	<title>Members</title>
+	<link href="https://fonts.googleapis.com/css?family=Mukta+Mahee" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-Welcome to The Wall
+
+	<div id="header">
+		<h1><span class="red">The</span> Wall</h1>
+		<div>
+			<p class="name">Welcome {{ session['first_name'].title() }}</p>
+			<a href="/logout">Log Off</a>
+		</div>
+	</div>
+	<div id="page_wrap">
+		<div class="post_message">
+			<form id="new_message" action="/new_message" method="POST">
+				<p>Post a message</p>
+				<textarea></textarea>
+				<input type="submit" value="Post a message" class="button" />
+			</form>
+		</div>
+
+		<div class="show_messages">
+			{% for message in messages %}
+				<div class="message">
+					<p class="tite">{{ message['posted_by'] }} - {{ message['posted_on'] }}</p>
+					<p class="content">{{ message['content'] }}</p>
+				</div>
+			{% endfor %}
+		</div>
+
+	</div>
+
 </body>
 </html>

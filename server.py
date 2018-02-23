@@ -96,7 +96,7 @@ def register():
 		}
 		mysql.query_db(query, data)
 
-		query = "SELECT id FROM users WHERE first_name=:first_name AND last_name=:last_name AND email_address=:email_address"
+		query = "SELECT id, first_name FROM users WHERE first_name=:first_name AND last_name=:last_name AND email_address=:email_address"
 		data = {
 				'first_name': first_name,
 				'last_name': last_name,
@@ -105,6 +105,7 @@ def register():
 		user = mysql.query_db(query, data)
 		session.clear()
 		session['id'] = user[0]['id']
+		session['first_name'] = user[0]['first_name']
 		return redirect('/members')
 	else:
 		return redirect('/sign_up')
@@ -127,6 +128,7 @@ def login():
 		if user[0]['password'] == hashed_pw:
 			session.clear()
 			session['id'] = user[0]['id']
+			session['first_name'] = user[0]['first_name']
 			return redirect('/members')
 		else:
 			flash('Incorrect password', 'error')
@@ -141,4 +143,27 @@ def members():
 		return redirect('/')
 	return render_template('members.html')
 
+
+@app.route('/new_message')
+def new_message():
+	
+	return redirect('/members')
+
+@app.route('/logout')
+def logout():
+	session.clear()
+	return redirect('/')
+
+
+
+
+
 app.run(debug=True)
+
+
+
+
+
+
+
+

@@ -1,8 +1,24 @@
+/* 
+	RED: #A53225;
+	PURPLE: #503867;
+*/
+
+
 body {
 	font-family: 'Mukta Mahee', sans-serif;
 	margin: 0;
 	padding: 0;
 	background: url(../images/circles-light.png);
+}
+
+a {
+	color: #A53225;
+	text-decoration: none;
+	transition: opacity 0.2s ease 0s;
+}
+
+a:hover {
+	opacity: 0.7;
 }
 
 .messages {
@@ -99,7 +115,7 @@ p.register {
 }
 
 .button {
-	background-color: #A5362D;
+	background-color: #A53225;
 	border: none;
 	border-radius: none;
 	color: #FFFFFF;
@@ -107,4 +123,77 @@ p.register {
 	display: table;
 	margin: 1rem 0 0 auto;
 }
+
+/*==== members page ====*/
+
+#header {
+	border-bottom: 6px solid #A53225;
+	background-color: #503867;
+	padding: 1rem 0;
+}
+
+#header > div {
+	float: right;
+	padding-right: 1.5rem;
+}
+
+#header h1 {
+	font-size: 3rem;
+	padding-left: 1.5rem;
+}
+
+#header h1 span.red {
+	color: #A5362D;
+}
+
+#header h1, #header > div p {
+	display: inline-block;
+	margin: 1rem 0;
+	line-height: 2rem;
+	color: white;
+}
+
+#header > div p {
+	margin-right: 2rem;
+	font-size: 1.25rem;
+}
+
+#header > div a {
+	color: white;
+}
+
+.post_message {
+	padding-top: 2rem;
+}
+
+form#new_message {
+	background: none;
+	border: none;
+	max-width: 700px;
+	width: 100%;
+	margin: 0 auto;
+	padding: 0;
+}
+
+form#new_message p {
+	text-decoration: none;
+	margin: 0;
+}
+
+form#new_message textarea {
+	width: 100%;
+	margin: 0 1rem;
+	height: 150px;
+	resize: none;
+}
+
+
+
+
+
+
+
+
+
+
 
