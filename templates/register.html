@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>The Wall</title>
+	<link href="https://fonts.googleapis.com/css?family=Mukta+Mahee" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+	<div id="pagewrap">
+		<div class="messages">
+			{% with messages = get_flashed_messages(with_categories=true) %}
+				{% if messages %}
+					<ul>
+					{% for category, message in messages %}
+						<li class="{{ category }}">{{ message }}</li>
+					{% endfor %}
+					</ul>
+				{% endif %}
+			{% endwith %}
+		</div>
+		<div class="container">
+			<div class="col-3-5 desc-bg">
+				<h1>The Wall</h1>
+				<p>A message board application built on Flask with Python and love.</p>
+			</div>
+			<div class="col-2-5">
+				<form id="register" action="/register" method="POST">
+				<p>Register</p>
+				<label>First Name:</label>
+				<input type="text" name="first_name" value="{{ session['first_name'] }}">
+				<label>Last Name:</label>
+				<input type="text" name="last_name" value="{{ session['last_name'] }}">
+				<label>Email:</label>
+				<input type="text" name="email" value="{{ session['email'] }}">
+				<label>Password:</label>
+				<input type="password" name="password">
+				<label>Confirm:</label>
+				<input type="password" name="confirm_pw">
+				<input type="submit" value="Register" class="button">
+			</form>
+			</form>
+			<p class="register">Already a member? <a href="/">Log In</a></p>
+			</div>
+		</div>
+	</div>
+	
+</body>
+</html>
