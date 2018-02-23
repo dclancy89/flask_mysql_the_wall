@@ -1,5 +1,6 @@
 import md5
 import os, binascii
+import datetime
 from flask import Flask, render_template, request, redirect, session, flash
 app = Flask(__name__)
 app.secret_key = 'jkfu890342htruo34v7yut8039pthjiopv78t0432-y5t3480wtb342y905n34um20w'
@@ -197,20 +198,47 @@ def new_comment(message_id):
 
 @app.route('/delete_message/<message_id>')
 def delete_message(message_id):
-	query = "SELECT messages.user_id FROM messages WHERE message_id=:message_id"
-	data = {'message_id': message_id}
+	query = "SELECT messages.user_id, messages.created_at FROM messages WHERE id=:id"
+	data = {'id': int(message_id)}
 
 	result = mysql.query_db(query, data)
-	message_user_id = result[0]['message_id']
+	message_user_id = result[0]['user_id']
+	created_at = result[0]['created_at']
 
 
-	if message_user_id == session['id']:
-		query = "DELETE FROM messages WHERE messages.message_id=:message_id"
-		data = {'message_id': message_id}
+	
+
+	if message_user_id == session['id'] and created_at > datetime.datetime.now()-datetime.timedelta(minutes=30):
+		query = "DELETE FROM messages WHERE messages.id=:id"
 		mysql.query_db(query, data)
+		
+		query = "SELECT * FROM comments WHERE comments.message_id=:id"
+		if len(mysql.query_db(query,data)) != 0:
+			query = "DELETE FROM comments WHERE comments.message_id=:id"
+			mysql.query_db(query, data)
 
-		query = "DELETE FROM comments WHERE comments.message_id=:message_id"
+		flash("Message Deleted.", 'success')
+	else:
+		flash("You don't have permission to delete that message.", 'error')
+
+	return redirect('/members')
+
+@app.route('/delete_comment/<comment_id>')
+def delete_comment(comment_id):
+	query = "SELECT comments.user_id, comments.created_at FROM comments WHERE id=:id"
+	data = {'id': int(comment_id)}
+
+	result = mysql.query_db(query, data)
+	comment_user_id = result[0]['user_id']
+	created_at = result[0]['created_at']
+
+	if comment_user_id == session['id'] and created_at > datetime.datetime.now()-datetime.timedelta(minutes=30):
+		query = "DELETE FROM comments WHERE comments.id=:id"
+		data = {'id': int(comment_id)}
 		mysql.query_db(query, data)
+		flash("Comment Deleted.", 'success')
+	else:
+		flash("You don't have permission to delete that comment.", 'error')
 
 	return redirect('/members')
 

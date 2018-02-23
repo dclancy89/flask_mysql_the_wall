@@ -66,6 +66,7 @@ a:hover {
 	width: 100%;
 	display: block;
 	margin: 0 auto;
+	padding-bottom: 5rem;
 }
 
 .container {
@@ -142,6 +143,10 @@ p.register {
 	padding-left: 1.5rem;
 }
 
+#header h1 a {
+	color: white;
+}
+
 #header h1 span.red {
 	color: #A5362D;
 }
@@ -169,7 +174,7 @@ p.register {
 form#new_message, form#new_comment {
 	background: none;
 	border: none;
-	max-width: 700px;
+	/*max-width: 800px;*/
 	width: 100%;
 	margin: 0 auto;
 	padding: 0;
@@ -212,8 +217,16 @@ form#new_comment textarea {
 	margin-left: 1.5rem;
 }
 
-.message .comments {
+.message .comments, .message .new_comment {
 	margin-left: 3rem;
+}
+
+.message .new_comment form#new_comment p {
+	font-size: 1rem;
+}
+
+.message .new_comment form#new_comment textarea {
+	margin-left: 0;
 }
 
 .message .title a {

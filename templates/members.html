@@ -8,13 +8,24 @@
 <body>
 
 	<div id="header">
-		<h1><span class="red">The</span> Wall</h1>
+		<h1><a href="/" class="logo"><span class="red">The</span> Wall</a></h1>
 		<div>
 			<p class="name">Welcome {{ session['first_name'].title() }}</p>
 			<a href="/logout">Log Off</a>
 		</div>
 	</div>
 	<div id="pagewrap">
+		<div class="messages">
+			{% with messages = get_flashed_messages(with_categories=true) %}
+				{% if messages %}
+					<ul>
+					{% for category, message in messages %}
+						<li class="{{ category }}">{{ message }}</li>
+					{% endfor %}
+					</ul>
+				{% endif %}
+			{% endwith %}
+		</div>
 		<div class="post_message">
 			<form id="new_message" action="/new_message" method="POST">
 				<p>Post a message</p>
@@ -38,9 +49,9 @@
 					</div>
 					<div class="new_comment">
 						<form id="new_comment" action="/new_comment/{{ message['id'] }}" method="POST">
-							<p>Post a message</p>
+							<p>Post a comment</p>
 								<textarea name="comment"></textarea>
-								<input type="submit" value="Post a message" class="button" />
+								<input type="submit" value="Post comment" class="button" />
 						</form>
 					</div>
 				</div>
