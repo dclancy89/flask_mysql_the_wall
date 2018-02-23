@@ -12,6 +12,8 @@ EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 
 @app.route('/')
 def index():
+	if session.get('id') != None:
+		return redirect('/members')
 	return render_template('index.html')
 
 @app.route('/sign_up')
@@ -141,12 +143,75 @@ def login():
 def members():
 	if session.get('id') == None:
 		return redirect('/')
-	return render_template('members.html')
 
 
-@app.route('/new_message')
+	query = """SELECT messages.id, messages.user_id, CONCAT(users.first_name, ' ', users.last_name) as posted_by, DATE_FORMAT(messages.created_at, '%M %D, %Y') as posted_on, messages.message as content 
+				FROM messages
+				JOIN users ON messages.user_id = users.id
+				ORDER BY messages.created_at DESC
+			"""
+	messages = mysql.query_db(query)
+
+	query = """SELECT comments.id, comments.user_id, comments.message_id, CONCAT(users.first_name, ' ', users.last_name) as posted_by, DATE_FORMAT(messages.created_at, '%M %D, %Y') as posted_on, comments.comment as content 
+				FROM comments
+				JOIN messages ON comments.message_id = messages.id
+				JOIN users ON messages.user_id = users.id
+			"""
+	comments = mysql.query_db(query)
+
+	return render_template('members.html', messages=messages, comments=comments)
+
+
+@app.route('/new_message', methods=['POST'])
 def new_message():
-	
+	user_id = session['id']
+	message = request.form['message']
+
+	query = "INSERT INTO messages (user_id, message, created_at, updated_at) VALUES (:user_id, :message, NOW(), NOW())"
+	data = {
+		'user_id': user_id,
+		'message': message
+	}
+
+	mysql.query_db(query, data)
+
+	return redirect('/members')
+
+
+@app.route('/new_comment/<message_id>', methods=['POST'])
+def new_comment(message_id):
+	user_id = session['id']
+	comment = request.form['comment']
+
+	query = "INSERT INTO comments (message_id, user_id, comment, created_at, updated_at) VALUES (:message_id, :user_id, :comment, NOW(), NOW())"
+	data = {
+		'message_id': message_id,
+		'user_id': user_id,
+		'comment': comment
+	}
+
+	mysql.query_db(query, data)
+
+	return redirect('/members')
+
+
+@app.route('/delete_message/<message_id>')
+def delete_message(message_id):
+	query = "SELECT messages.user_id FROM messages WHERE message_id=:message_id"
+	data = {'message_id': message_id}
+
+	result = mysql.query_db(query, data)
+	message_user_id = result[0]['message_id']
+
+
+	if message_user_id == session['id']:
+		query = "DELETE FROM messages WHERE messages.message_id=:message_id"
+		data = {'message_id': message_id}
+		mysql.query_db(query, data)
+
+		query = "DELETE FROM comments WHERE comments.message_id=:message_id"
+		mysql.query_db(query, data)
+
 	return redirect('/members')
 
 @app.route('/logout')

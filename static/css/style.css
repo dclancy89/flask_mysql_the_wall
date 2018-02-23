@@ -121,7 +121,7 @@ p.register {
 	color: #FFFFFF;
 	padding: 5px 10px;
 	display: table;
-	margin: 1rem 0 0 auto;
+	margin: 1rem 0 1rem auto;
 }
 
 /*==== members page ====*/
@@ -166,7 +166,7 @@ p.register {
 	padding-top: 2rem;
 }
 
-form#new_message {
+form#new_message, form#new_comment {
 	background: none;
 	border: none;
 	max-width: 700px;
@@ -175,17 +175,52 @@ form#new_message {
 	padding: 0;
 }
 
-form#new_message p {
+form#new_comment {
+	max-width: 100%;
+}
+
+form#new_message p, form#new_comment p{
 	text-decoration: none;
 	margin: 0;
 }
 
-form#new_message textarea {
+form#new_message textarea, form#new_comment textarea {
 	width: 100%;
 	margin: 0 1rem;
 	height: 150px;
 	resize: none;
 }
+
+form#new_comment textarea {
+	height: 90px;
+}
+
+.message {
+	margin-top: 1rem;
+	border-bottom: 1px solid black;
+}
+
+.message:last-child {
+	border: none;
+}
+
+.message .title {
+	font-size: 1.5rem;
+}
+
+.message .content {
+	margin-left: 1.5rem;
+}
+
+.message .comments {
+	margin-left: 3rem;
+}
+
+.message .title a {
+	font-size: 1rem;
+	margin-left: 2rem;
+}
+
 
 
 

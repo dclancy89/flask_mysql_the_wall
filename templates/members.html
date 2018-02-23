@@ -14,11 +14,11 @@
 			<a href="/logout">Log Off</a>
 		</div>
 	</div>
-	<div id="page_wrap">
+	<div id="pagewrap">
 		<div class="post_message">
 			<form id="new_message" action="/new_message" method="POST">
 				<p>Post a message</p>
-				<textarea></textarea>
+				<textarea name="message"></textarea>
 				<input type="submit" value="Post a message" class="button" />
 			</form>
 		</div>
@@ -26,8 +26,23 @@
 		<div class="show_messages">
 			{% for message in messages %}
 				<div class="message">
-					<p class="tite">{{ message['posted_by'] }} - {{ message['posted_on'] }}</p>
+					<p class="title">{{ message['posted_by'] }} - {{ message['posted_on'] }} {% if session['id'] == message['user_id'] %} <a href="/delete_message/{{ message['id'] }}">Delete</a> {% endif %}</p>
 					<p class="content">{{ message['content'] }}</p>
+					<div class="comments">
+						{% for comment in comments %}
+							{% if comment['message_id'] == message['id'] %}
+								<p class="title">{{ comment['posted_by'] }} - {{ comment['posted_on'] }} {% if session['id'] == comment['user_id'] %} <a href="/delete_comment/{{ comment['id'] }}">Delete</a> {% endif %}</p>
+								<p class="content">{{ comment['content'] }}</p>
+								{% endif %}
+						{% endfor %}
+					</div>
+					<div class="new_comment">
+						<form id="new_comment" action="/new_comment/{{ message['id'] }}" method="POST">
+							<p>Post a message</p>
+								<textarea name="comment"></textarea>
+								<input type="submit" value="Post a message" class="button" />
+						</form>
+					</div>
 				</div>
 			{% endfor %}
 		</div>
